@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<style>
+    text {
+        font: bold 48px monospace;
+    }
+    .enter {
+        fill: green;
+    }
+
+    .update {
+        fill: #333;
+    }
+</style>
+<svg width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v5.js"></script>
+<script>
+    var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+    var svg = d3.select('svg'),
+    width = svg.attr('width'),
+    heigth = svg.attr('height'),
+    g = svg.append('g').attr("transform", "translate(" + 32 + "," + (heigth / 2) + ")");
+
+    function update(data) {
+        var text = g.selectAll('text')
+            .data(data, function(d) {return d});
+        text.attr('class', 'update');
+        text.enter().append('text')
+            .attr('class', 'enter')
+            .text(function(d) {return d})
+            .attr("dy", "0.31em")
+            .merge(text)
+            .attr('x', function(d, i) {return i * 32});
+        text.exit().remove();
+    }
+
+    update(alphabet);
+
+    d3.interval(function() {
+        update(d3.shuffle(alphabet).slice(0, Math.floor(Math.random() * 26)).sort())
+    }, 1500);
+</script>

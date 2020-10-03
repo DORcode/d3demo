@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .bar {
+        fill: steelblue;
+    }
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+</style>
+    
+<svg class="chart"></svg>
+<script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+<script>
+
+  const margin = {'top': 20, 'right': 30, 'bottom': 30, 'left': 40},
+      width = 950 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+  const svg = d3.select(".chart");
+
+  let xScale, yScale;
+  
+  allData = [];
+  years = [];
+  tempYears = [];
+  yearData = [];
+  regions = [];
+
+  function axisinit(allData) {
+      
+    let incomeMax = d3.max(allData, d => d.income);
+    let lifeMax = d3.max(allData, d => d.lifeExpectancy);
+
+    // 尺度
+    xScale = d3.scaleLinear()
+      .domain([0, incomeMax])
+      .range([0, width]);
+
+    yScale = d3.scaleLinear()
+      .domain([0, lifeMax])
+      .range([height, 0]);
+
+    const g = svg.append("g")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("transform", `translate(${margin.left}, ${margin.top})`)
+      .attr("id", "maingroup");
+
+    // 坐标
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale);
+
+    let xAxisGroup = g.append('g')
+        .attr("class", "x axis")
+        .attr('transform', `translate(${0}, ${height})`)
+        .call(xAxis);
+
+    xAxisGroup.append("text")
+      .attr("font-size", 16)
+      .attr("y", 60)
+      .attr("x", width/2)
+      .attr("fill", "#333333")
+      .text("收入");
+
+    let yAxisGroup = g.append('g')
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    yAxisGroup.append("text")
+      .attr("font-size", 16)
+      .attr("transform", `rotate(-90)`)
+      .attr("x", -height/2)
+      .attr("y", -60)
+      .attr("fill", "#333333")
+      .text("预期寿命")
+      .attr("text-anchor", "middle");
+  }
+
+  function scatter(yearData, year) {
+
+    itemData = this.getData(yearData, year);
+
+    color = d3.scaleOrdinal(regions.map(d => d), d3.schemeCategory10).unknown("black");
+
+    radius = d3.scaleSqrt([0, 5e8], [0, width / 24]);
+
+    var g = d3.select("#maingroup");
+
+    update = g.selectAll("circle").data(this.itemData, d => d.name);
+
+    enter = update.enter().append("circle")
+      .attr("cx", d => xScale(d.income))
+      .attr("cy", d => yScale(d.lifeExpectancy))
+      .attr("r",  d => radius(d.population))
+      .attr("fill", d => color(d.region))
+      .attr("opacity", 0.8);
+
+    update.merge(enter)
+      .transition().ease(d3.easeLinear).duration(1000)
+      .attr("cx", d => xScale(d.income))
+      .attr("cy", d => yScale(d.lifeExpectancy));
+  }
+
+  function getData(yearData, year) {
+    temp = []
+    yearData.forEach(d => {
+      if(d['year'] === year) {
+        temp = d['data'];
+      }
+    });
+    return temp;
+  }
+
+  d3.json("../nations.json").then(function(data) {
+    data.forEach(function(d, i) {
+      
+      temp = []
+      tempyear = [];
+      
+      partData = [];   
+
+      d['population'].concat(d['lifeExpectancy']).concat(d['income']).forEach(function(d) {
+        temp.push(d[0]);
+      })
+
+      tempyear = Array.from( new Set(temp.map(t => t)) ).sort( (a,b) => {
+        return a - b;
+      })
+
+      tempyear.forEach(t => {
+        tempYears.push(t);
+      })
+
+      tempyear.forEach(t => {
+        partData.push({"year": t, "name": d['name'], "region": d['region']});
+      })
+      
+      d['population'].forEach(function(t) {
+        partData.forEach(p => {
+          if(p['year'] === t[0]) {
+            p['population'] = t[1];
+          }
+        });
+      });
+
+      d['lifeExpectancy'].forEach(function(t) {
+        partData.forEach(p => {
+          if(p['year'] === t[0]) {
+            p['lifeExpectancy'] = t[1];
+          }
+        })
+      });
+
+      d['income'].forEach(function(t) {
+        partData.forEach(p => {
+          if(p['year'] === t[0]) {
+            p['income'] = t[1];
+          }
+        })
+      });
+      
+      partData.forEach(t => {
+        allData.push(t)
+      })
+      
+    });
+
+    regions = Array.from( new Set(allData.map(t => t['region'])) ).sort( (a,b) => {
+        return a - b;
+      });
+
+    years = Array.from( new Set(tempYears.map(t => t)) ).sort( (a,b) => {
+        return a - b;
+      });
+
+    // 将数据处理为[{"year":1870, data:[{ year: 1820, name: "Angola", region: "Sub-Saharan Africa", … },{}]}
+
+    years.forEach(d => yearData.push({"year":d, data: []}));
+
+    allData.forEach(a => {
+      yearData.forEach(y => {
+        if(a['year'] === y['year']) {
+          y['data'].push(a);
+        }
+      })
+    });
+ 
+    this.axisinit(allData);
+    
+    // var c = 0;
+    // setInterval(function() {
+    //   if(c >= years.length) {
+    //     clearInterval(this);
+    //   } else {
+    //     this.scatter(yearData, years[c])
+    //   }
+    //   c = c + 1;
+    // }, 1000);
+    
+  });
+  
+</script>
+</html>

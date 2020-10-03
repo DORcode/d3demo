@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .bar {
+        fill: steelblue;
+    }
+
+    .axis text {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+</style>
+    
+<svg class="chart"></svg>
+<script src="//d3js.org/d3.v5.min.js" charset="utf-8"></script>
+<script>
+  var data = [{"name":"A", "value":120}, {"name":"B", "value":100}, {"name":"C", "value":100}];
+  var margin = {'top': 20, 'right': 30, 'bottom': 30, 'left': 40},
+        width = 950 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+  var chart = d3.select(".chart")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var xScale = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.value)])
+    .range([0, width]);
+
+  var yScale = d3.scaleBand()
+    .domain(data.map(d => d.name))
+    .range([0, height])
+     .padding(0.2);
+   var xAxis = d3.axisBottom(xScale);
+   var yAxis = d3.axisLeft(yScale);
+
+  chart.append('g')
+       .attr("class", "x axis")
+       .attr('transform', 'translate(0,' + height + ')')
+       .call(xAxis);
+
+  chart.append('g')
+       .attr("class", "y axis")
+       .call(yAxis);
+
+  // data.forEach(d => {
+  //     chart.append("rect")
+  //          .attr("y", yScale(d.name))
+  //          .attr("width", xScale(d.value))
+  //          .attr("height", yScale.bandwidth())
+  //          .attr("fill", "red");
+  // });
+
+  chart.selectAll("rect").data(data).enter().append("rect")
+        .attr("y", d => yScale(d.name))
+        .attr("width", d => xScale(d.value))
+        .attr("height", yScale.bandwidth())
+        .attr("fill", "red");
+
+  chart.append("g").selectAll("text").data(data).enter().append("text")
+    .text(d => d.value)
+    .attr("x", d => xScale(d.value) - 20)
+    .attr("y", (d,i) => yScale(d.name) + yScale.bandwidth()/2+margin.top/2)
+    //.attr("dy", "0.35em")
+    //.attr("dx", -4)
+    .attr('fill', 'black')
+    //.attr("text-anchor", "middle");
+
+    chart.append("text").text("横向条形图").attr("transform", `translate(${width/2},0)`)
+        .attr("text-anchor", "middle");
+
+        d3.selectAll(".tick text").attr("font-size", "20em");
+  
+  
+</script>
+</html>

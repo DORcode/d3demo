@@ -1,0 +1,12 @@
+.chart {
+    background-color: blueviolet;
+    text-align: right;
+    margin: 1px;
+    padding: 3px;
+
+}
+
+.bar {
+    border: 1px;
+    border-color: black;
+}

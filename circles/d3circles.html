@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head></head>
+<svg class="chart"></svg>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+    d3.select('.chart').selectAll('circle')
+        .data([10, 20, 30], function(d) {return d;}).enter().append('circle').attr('r', function(d) {
+            return Math.sqrt(d);
+        }).attr('cx', function(d, i) {
+            if(i == 0) {
+                return 10;
+            } else {
+                return d;
+            }
+        }).attr('cy', function(d, i) {
+            if(i == 0) {
+                return 10;
+            } else {
+                return d;
+            }
+        }).attr('style', 'fill:steelblue;')
+</script>

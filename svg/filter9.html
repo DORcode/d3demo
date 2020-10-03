@@ -1,0 +1,22 @@
+<svg width="100%" height="100%">
+    <defs>
+        <filter id="test" filterUnits="userSpaceOnUse" x="0" y="0" width="200" height="120">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"></feGaussianBlur>
+            <feOffset in="blur" dx="4" dy="4" reslut="offsetBlur"></feOffset>
+            <feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lighting-color="#bbbbbb" result="specOut">
+                <fePointLight x="-5000" y="-10000" z="20000"></fePointLight>
+            </feSpecularLighting>
+            <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"></feComposite>
+            <feComposite in="SourceGraphic" in2="sepcOut" operator="arithmetic" result="litPaint" k1="0" k2="1" k3="1" k4="0"></feComposite>
+            <feMerge>
+                <feMergeNode in="offsetBlur"></feMergeNode>
+                <feMergeNode in="litPaint"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <rect x="1" y="1" width="198" height="118" fill="#cccccc"></rect>
+    <g filter="url(#test)">
+        <path fill="none" stroke="#D90000" stroke-width="10" d="M50, 90 C0, 90 0, 30 50, 30 L150, 30 C200, 30 200, 90 150, 90 z"></path>
+        <text fill="#FFFFFF" stroke="black" font-size="45" font-family="Verdana" x="52" y="76">SVG</text>
+    </g>
+</svg>
