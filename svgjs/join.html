@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body style="height: 500px;">
+    <svg class="chart"></svg>
+    <script>
+
+      function randomLetters() {
+        return d3.shuffle("abcdefghijklmnopqrstuvwxyz".split(""))
+          .slice(0, Math.floor(6 + Math.random() * 20))
+          .sort();
+      }
+
+        const svg = d3.select(".chart").attr("width", 500)
+        .attr("height", 100)
+        //.attr("transform", `translate(30, 20)`);
+
+        setInterval(function() {
+          const t = svg.transition().duration(1000)
+        
+        svg.selectAll("text").data(randomLetters(), d => d)
+          .join(
+            enter => enter.append("text").attr("fill", "red")
+                        .attr("x", (d, i) => i * 30)
+                        .attr("y", -30)
+                        .text(d => d)
+                        .call(enter => enter.transition(t).attr("fill", "orange").attr("y", 50)),
+            update => update.attr("fill", "blue")
+                            .attr("y", 50)
+                            .call(update => update.transition(t).attr("x", (d, i) => i * 30)),
+            
+            exit => exit.attr("fill", "yellow").call(exit => exit.transition().duration(100).attr("y", 80).remove())
+          )
+        }, 1000);
+
+    </script>
+  </body>
+</html>

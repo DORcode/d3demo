@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg class="chart"></svg>
+    <script>
+      const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 950 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+      const svg = d3.select(".chart").attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom);
+
+      let g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`)
+      .attr("id", "maingroup");
+      let xScale = d3.scaleLinear()
+                    .domain([0, 1])
+                    .range([0, width]), yScale = d3.scaleBand()
+    .domain(d3.range(12 + 1))
+    .rangeRound([0, height])
+    .padding(0.1);
+      let xAxis;
+
+      function init(xArray) {
+        // xScale.domain(xArray)
+
+        g.select(".axis").remove();
+
+        // xScale = d3.scaleLinear()
+        //             .domain(xArray)
+        //             .range([0, width]);
+        // yScale = d3.scaleBand()
+        //             .domain(yArray)
+        //             .range([0, height])
+        //             .padding(0.1);
+        
+        xAxis = d3.axisTop(xScale).tickSize(-height).tickSizeOuter(0);
+
+        // 不需要 yAxis = d3.axisLeft(yScale)
+        
+        let xAxisGroup = g.append("g")
+          .attr("class", "g axis")
+          .transition().ease(d3.easeLinear).duration(1000)
+          .call(xAxis);
+        g.select(".tick:first-of-type text").remove();
+        g.selectAll(".tick:not(:first-of-type) line").attr("stroke", "white");
+        g.select(".domain").remove();
+      }
+
+      function bars(year, data) {
+        let g = d3.select("#maingroup");
+
+        g.select(".year").remove();
+        g.append("text")
+          .attr("class", "year")
+          .attr("x", width - 120)
+          .attr("y", height - 30)
+          .text(year)
+          .attr("font-size", 30)
+          .attr("fill", "black");
+          
+        let updateRect = g.selectAll("rect").data(data, d => d.name);
+        let enterRect = updateRect.enter().append("rect")
+          .attr("x", xScale(0))
+          .attr("y", d => yScale(d.name))
+          .attr("width", d => xScale(d["value"]))
+          .attr("height", yScale.bandwidth())
+          .attr("fill", "red");
+        updateRect.exit().transition().ease(d3.easeLinear).duration(1).remove().attr("width", 0);
+
+        updateRect.merge(enterRect)
+              .transition().ease(d3.easeLinear).duration(1000)
+              .attr("y", d => yScale(d.name))
+              .attr("width", d => xScale(d["value"]))
+              //.attr("height", yScale.bandwidth());
+
+        let updateText = g.selectAll(".company").data(data, d => d.name);
+        let enterText = updateText.enter().append("text")
+          .attr("transform", d => `translate(${xScale(d.value)},${yScale(d.name)})`)
+          .attr("class", "company")
+          .attr("x", d => d.name.length * -10)
+          .attr("y", yScale.bandwidth() / 2)
+          .attr("dy", "0.35em")
+          .text(d => d.name)
+          .call(text => text.append("tspan")
+          .attr("fill-opacity", 0.7)
+          .attr("font-weight", "normal")
+          .attr("x", d => d.name.length * -10)
+          .attr("dy", "1.15em"));
+        
+        updateText.exit().transition().ease(d3.easeLinear).duration(1).remove()
+          .call(g => g.select("tspan").tween("text", d => textTween(d.value, d.value)));
+        updateText.merge(enterText)
+          .transition().ease(d3.easeLinear).duration(1002)
+          .attr("transform", d => `translate(${xScale(d.value)},${yScale(d.name)})`)
+          .attr("x", d => d.name.length * -10)
+          //.attr("y", yScale.bandwidth() / 2)
+          .attr("dy", "0.35em")
+          .call(g => g.select("tspan").tween("text", d => textTween(0, d.value)));
+        
+      }
+
+      // 需要 pre next
+      d3.csv("../data/category-brands.csv").then(function(data) {
+
+        // 数据整理成{"date": []}
+        dateBrands = {};
+        dates = Array.from( new Set(data.map(d => d["date"])) )
+        dates = dates.sort( (a, b) => {
+            return new Date(a) - new Date(b);
+        });
+
+        dates.forEach(d => {
+          let year = getYear(d);
+          dateBrands[year] = [];
+        });
+        
+        data.forEach(d => {
+          let year = getYear(d["date"]);
+          d["value"] = +(d["value"]);
+          dateBrands[year].push(d);
+        })
+
+        // 排序
+        dates.forEach(d => {
+          let year = getYear(d);
+          dateBrands[year].sort((a, b) => {
+            return  - a["value"] + b["value"];
+          })
+        });
+
+        var c = 0;
+        setInterval(function() {
+          if(c >= dates.length) {
+            return;
+          } else {
+            let year = getYear(dates[c]);
+            console.log(year)
+            let brands12 = dateBrands[year].slice(0, 12);
+            let xArray = [0, d3.max(brands12, d => d["value"])];
+            let yArray = brands12.map(d => d["name"]);
+            // //if(c == 0) {
+            //   this.init(xArray, yArray);
+            // } else {
+              xScale.domain(xArray);
+              yScale.domain(yArray);
+
+              init(xArray);
+            //}
+            
+            this.bars(year, brands12);
+          }
+          c = c + 1;
+        }, 1000);
+        
+
+      });
+
+      function getYear(d) {
+        var dt = new Date(d);
+        let year = dt.getFullYear();
+        return year;
+      }
+
+      function textTween(a, b) {
+        const i = d3.interpolateNumber(a, b);
+        return function(t) {
+          this.textContent = formatNumber(i(t));
+        };
+      }
+
+      formatNumber = ƒ(t)
+      formatNumber = d3.format(",d")
+
+    </script>
+  </body>
+</html>

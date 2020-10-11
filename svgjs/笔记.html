@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <script>
+    d3.select("#id")
+    d3.selectAll(".class")
+    d3.selectAll("rect")
+    d3.select("#id rect")
+    d3.selectAll(".class text")
+    d3.select(".class") // 返回第一个
+
+    d3.select("#rect1").attr("fill","red")
+    d3.select("#rect1").attr("stroke","red")
+    d3.select("#rect1").attr("transform","translate(200,200)")
+    d3.select("#rect1").attr("transform","rotate(90)")
+    d3.select("#rect1").attr("transform","scale(90)")
+
+    let width = 1;
+    .attr("transform",`translate(0, ${width+1})`);
+
+    d3.select().append().attr("id", "")
+    d3.select().remove()
+
+    svg.selectAll("circle")
+  .data(data)
+  .join(
+    enter => enter.append("circle"),
+    update => update,
+    exit => exit.remove()
+  )
+    .attr("fill", "none")
+    .attr("stroke", "black");
+
+    // scale
+    // linear
+
+    const xScale = d3.scaleLinear()
+      .domain([min, max])
+      .range([min, max])
+
+    const xScale = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.value)])
+      .range([0, innerWidth])
+
+    d3.max(数据，回调：如何提取数据的值)
+
+    const yScale = d3.scaleBand()
+      .domain(list)
+      .range([min, max])
+      .padding(p);
+
+    const yScale = d3.scaleBand()
+      .domain(data.map(d => d.name))
+      .range([0, innerHeight])
+      .padding(0.1)
+
+      // 引入坐标轴
+
+      yAxis = d3.axisLeft(yScale);
+      xAxis = d3.axisBottom(xScale);
+    
+    // 动画
+    svg.transition()
+        .duration(duration)
+        .ease(d3.easeLinear);
+
+      Array.from( new Set(data.map(d => d[''])) )
+      [].sort( (a,b) => {
+        return new Date(a) - new Date(b);
+      })
+
+      // path 
+      // 属性
+      // d
+      // fill 填充颜色
+      // stroke 描边颜色
+      // stroke-width 描边宽度
+      // transform = "translate(x, y)" 加了描边后需要平衡(x = stroke - width/2, y = stroke - width/2)
+      d3.line().x().y()
+      d3.geoPath().projection()
+      d3.area()
+      d3.arc().innerRadius().outerRadius()
+      d3.lineRadial().angle().radius()
+
+      // d 属性
+      // M = moveto(M X, Y): 将画移动到指定的坐标位置
+      // L = lineto(L X, Y): 画直线到指定的坐标位置
+      // H = horizontal lineto(H X): 画水平线到指定的X坐标位置
+      // V = vertical lineto(V Y): 画垂直线到指定的Y坐标位置
+      // C = curveto(C X1, Y1, X2, Y2, ENDX, ENDY): 三次贝赛曲线
+      // S = smooth curveto(S X2, Y2, ENDX, ENDY): 平滑曲线
+      // Q = quadratic Belzier curve(Q X, Y, ENDX, ENDy): 二次贝赛曲线
+      // T = smooth quadratic Belzier curveto(T ENDX, ENDY): 映射
+      // A = elliptical Arc(A RX, RY, XROTATION, FLAG1, FLAG2, X, Y): 弧线
+      // Z = closepath(): 关闭路径
+      // 以上命令均允许小写字母。大写表示绝对定位，小写表示相对定位。
+    
+    // topojson.feature(data, data.objects.countries) topojson.js
+
+    // 事件
+    d3.select("").on("click", callback)
+    // click
+    // mouseover
+    // mouseout
+    // keydown
+    // contextmenu
+    // https://developer.mozilla.org/en-US/docs/Web/Events
+    // https://github.com/sgratzl/d3tutorial
+    // https://github.com/xswei/d3js_doc
+
+    // D3-Tip
+
+
+    function formatTick(d) {
+      const s = (d / 1e6).toFixed(1);
+      return this.parentNode.nextSibling ? `\xa0${s}` : `$${s} million`;
+    }
+    </script>
+</body>
+</html>
+
+
+  
