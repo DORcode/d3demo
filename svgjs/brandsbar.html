@@ -81,20 +81,19 @@
         let enterText = updateText.enter().append("text")
           .attr("transform", d => `translate(${xScale(d.value)},${yScale(d.name)})`)
           .attr("class", "company")
-          .attr("x", d => d.name.length * -10)
+          .attr("x", d => xScale(d["value"]) - d.name.length * -10)
           .attr("y", yScale.bandwidth() / 2)
           .attr("dy", "0.35em")
           .text(d => d.name)
           .call(text => text.append("tspan")
           .attr("fill-opacity", 0.7)
           .attr("font-weight", "normal")
-          .attr("x", d => d.name.length * -10)
           .attr("dy", "1.15em"));
         
         updateText.exit().transition().ease(d3.easeLinear).duration(1).remove()
           .call(g => g.select("tspan").tween("text", d => textTween(d.value, d.value)));
         updateText.merge(enterText)
-          .transition().ease(d3.easeLinear).duration(1002)
+          .transition().ease(d3.easeLinear).duration(1000)
           .attr("transform", d => `translate(${xScale(d.value)},${yScale(d.name)})`)
           .attr("x", d => d.name.length * -10)
           //.attr("y", yScale.bandwidth() / 2)

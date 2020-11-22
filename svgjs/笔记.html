@@ -3,7 +3,9 @@
 
 <body>
   <script>
+    d3.select() // 搜索整个文档并返回匹配选择器的第一个元素的选择集。
     d3.select("#id")
+    d3.selectAll() //搜索整个文档，并按文档的顺序返回与选择器匹配的所有元素的选择集。
     d3.selectAll(".class")
     d3.selectAll("rect")
     d3.select("#id rect")
@@ -15,6 +17,27 @@
     d3.select("#rect1").attr("transform","translate(200,200)")
     d3.select("#rect1").attr("transform","rotate(90)")
     d3.select("#rect1").attr("transform","scale(90)")
+
+    d3.select("p.nav")
+    d3.select("g:first-child")
+
+    d3.selectAll("p").select("b")
+    d3.select("#id123").selectAll("circle")
+
+    d3.create() // 根据传入的元素名称，创建一个选择集，包含当前文档中给定名称的独立元素。
+
+    d3.select("svg").selectAll("circle")
+      .data(data).enter()
+      .append("circle").attr("fill", "red")
+    
+    d3.select("svg").selectAll("circle").data(data).exit().remove();
+
+    // :nth-child()从1开始计数
+    // :first-child等同于:nth-child(1)
+    svg.insert("li", ":nth-child(2)").datum("Lucy").text(d =>d);
+    svg.insert("li", ":first-child").datum("Lisa").text(d => d);
+
+
 
     let width = 1;
     .attr("transform",`translate(0, ${width+1})`);
@@ -101,9 +124,11 @@
     // 事件
     d3.select("").on("click", callback)
     // click
-    // mouseover
-    // mouseout
-    // keydown
+    // mousemove
+    // mousedown, mouseup
+    // mouseenter, mouseleave
+    // mouseover, mouseout
+    // keydown, keyup
     // contextmenu
     // https://developer.mozilla.org/en-US/docs/Web/Events
     // https://github.com/sgratzl/d3tutorial
@@ -111,11 +136,13 @@
 
     // D3-Tip
 
-
+    // 快学熟用 d3 https://github.com/janert/d3-for-the-impatient.git
     function formatTick(d) {
       const s = (d / 1e6).toFixed(1);
       return this.parentNode.nextSibling ? `\xa0${s}` : `$${s} million`;
     }
+
+    //如果想在回调函数使用this，必须使用function关键字，不能使用箭头函数。
     </script>
 </body>
 </html>
