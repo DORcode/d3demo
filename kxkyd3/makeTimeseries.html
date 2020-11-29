@@ -9,7 +9,61 @@
 <body>
   <svg id="chart"></svg>
   <script>
+    const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 700 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chart").attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+    const g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`)
+      .attr("id", "maingroup");
+
     
+    // 数据读取
+
+    d3.csv("./data/load.csv").then(function(data) {
+      console.log(data)
+
+      var parse = d3.utcParse("%H:%M:%S");
+      var format = d3.utcFormat("%H:%M");
+
+      ds = d3.map(data, d => [parse(d['timestamp']), +(d['load'])]);
+      console.log(ds);
+
+      dss = d3.pairs(ds, (a, b) => {return {src: a, dst: b}});
+      console.log(dss);
+      
+      var xScale = d3.scaleUtc().domain(d3.extent(ds, d => d[0])).range([0, width]).nice();
+      var yScale = d3.scaleLinear().domain(d3.extent(ds, d => d[1])).range([height, 0]).nice();
+
+      var cScale = d3.scaleThreshold().domain([35, 75]).range(["green", "orange", "red"]);
+
+      var xAxis = d3.axisBottom(xScale).tickSize(3).tickFormat(format).ticks(d3.utcMinute.every(10));
+      g.append('g').attr('transform', `translate(${0}, ${height})`).attr('class', 'axis').call(xAxis);
+
+      var yAxis = d3.axisLeft(yScale);
+      g.append("g").call(yAxis);
+
+      var line =  d3.line()
+          .x(d => xScale(d[0])).y(d => yScale(d[1]))
+          //.curve(d3.curveNatural);
+      g.selectAll("line").data(dss).enter().append("line")
+          .attr("x1", d => xScale(d.src[0]))
+          .attr("x2", d => xScale(d.dst[0]))
+          .attr("y1", d => yScale(d.src[1]))
+          .attr("y2", d => yScale(d.dst[1])).attr("stroke", d => cScale((d.src[1] + d.dst[1])/2))
+      //g.append("path").attr("fill", "none").attr("stroke", "black").attr("d", line(ds));
+
+      var txt = g.append("text").attr("x", 100).attr("y", 50).attr("font-family", "sans-serif").attr("font-size", 14);
+      svg.attr("cursor", "crosshair")
+        .on("mouseover", function() {
+          var pt = d3.mouse( svg.node() );
+          txt.text(format(xScale.invert(pt[0])) + "|" + d3.format(">2d")(yScale.invert(pt[1])));
+        })
+    });
   </script>
 </body>
 </html>

@@ -23,11 +23,6 @@
       .attr("transform", `translate(${margin.left}, ${margin.top})`)
       .attr("id", "maingroup");
 
-    // x轴
-    var xScale = d3.scaleLinear();
-
-    var yScale = d3.scaleLinear();
-    
     d3.csv("./data/cost.csv").then(function(data) {
 
       var years = d3.map(data, d=> +(d.year));
