@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="dragdrop" width="800" height="600">
+      <circle cx="100" cy="100" r="20" fill="red"/>
+      <circle cx="300" cy="100" r="20" fill="green"/>
+      <circle cx="500" cy="100" r="20" fill="blue"/>
+    </svg>
+    <script>
+      var cx, cy, widget, color;
+      var svg = d3.select("#dragdrop")
+      svg.selectAll("circle").call(d3.drag()
+          .on("start", function() {
+            color = d3.select(this).attr("fill")
+            widget = d3.select(this).attr("fill", "lime")
+            cx = d3.select(this).attr("cx")
+            cy = d3.select(this).attr("cy")
+          })
+          .on("drag", function(event, context) {
+            var pt = d3.pointer(event)
+            var dx = pt[0] - cx;
+            var dy = pt[1] - cy;
+            var r = Math.sqrt(Math.hypot(dx, dy)) + 20;
+            widget.attr("cx", pt[0]).attr("cy", pt[1]).attr("r", r)
+          })
+          .on("end", function() {
+
+            widget.transition().duration(1000)
+            .attr("fill", color).attr("cx", cx).attr("cy", cy).attr("r", 20);
+            widget = undefined;
+          })
+          
+          )
+    </script>
+  </body>
+</html>

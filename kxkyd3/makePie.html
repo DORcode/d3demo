@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="pie" width="700" height="700" style="background-color: lightgray;margin-top:50px">
+
+    </svg>
+    <script>
+      var data = [
+        {name: "Jim", votes: 12}, 
+        {name: "Sue", votes: 5},
+        {name: "Bob", votes: 12},
+        {name: "Ann", votes: 17},
+        {name: "Dan", votes: 3}
+      ];
+
+      var pie = d3.pie().value(d => d.votes).padAngle(0.025)(data);
+      var arcMrk = d3.arc().innerRadius(50).outerRadius(150).cornerRadius(10);
+
+      var scaleC = d3.scaleOrdinal(d3.schemePastel2).domain(pie.map(d => d.index));
+
+      var g = d3.select("#pie")
+          .append("g").attr("transform", `translate(300, 175)`);
+
+      g.selectAll("path").data(pie).enter().append("path")
+        .attr("d", arcMrk)
+        .attr("fill", d => scaleC(d.index))
+        .attr("stroke", "grey");
+
+      g.selectAll("text").data(pie).enter().append("text")
+        .text(d => d.data.name)
+        .attr("x", d => arcMrk.innerRadius(50).centroid(d)[0])
+        .attr("y", d => arcMrk.innerRadius(50).centroid(d)[1])
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 14)
+        .attr("text-anchor", "middle");
+    </script>
+  </body>
+</html>

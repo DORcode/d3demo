@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg class="chart" viewBox="0 0 500 120"></svg>
+    <script>
+      d3.select(".chart")
+      .append("text")
+      .attr("fill", "red")
+      .attr("x", 30)
+      .attr("y", 50)
+      .attr("rotate", "5, 15, 25, 35, 45, 55")
+      .text("Not")
+      .call(g => g.append("tspan").attr("rotate", "-10, -20, -30, -40").attr("font-size", 30).attr("fill", "orange").text("all characters")
+          .call(g => g.append("tspan").attr("rotate", "70, 60,50,40,30,20,10").attr("fill", "yellow").text("in")
+          .call(g => g.append("tspan").text("the")))
+          .call(g => g.append("tspan").attr("x", 40).attr("y", 90).attr("fill", "orange").text("text"))
+          )
+    </script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="symbols" width="700" height="700" style="background-color: lightgray;margin-top:50px"></svg>
+    <script>
+      var data = [{"x": 40, "y": 0, "val": "A"},
+        {"x": 80, "y": 30, "val": "A"},
+        {"x": 120, "y": -10, "val": "B"},
+        {"x": 160, "y": 15, "val": "A"},
+        {"x": 200, "y": 0, "val": "C"},
+        {"x": 240, "y": 10, "val": "B"}
+      ];
+
+      var symMkr = d3.symbol().size(81).type(d3.symbolStar);
+      // d3.symbol() 得到sym()可以使用size()和type()指定某个符号 
+
+      var scY = d3.scaleLinear().domain([-10, 30]).range([80, 40]);
+
+      var lineMaker = d3.line().x(d => d["x"]).y(d => d["y"])
+
+      var lineMaker2 = d3.line().x(d => d["x"]).y(d => scY(d["y"]))
+
+      d3.select("#symbols").append("line")
+
+      d3.select("#symbols")
+          .append("g").attr("id", "aaa").selectAll("path").data(data).enter().append("path")
+          .attr("d", arrow)
+          .attr("fill", "red")
+          .attr("transform", d => `translate(${d.x}, ${d.y})`)
+
+      d3.select("#aaa").append("path")
+        .transition().ease(d3.easeLinear).duration(1000)
+        .attr("fill", "none").attr("stroke", "red").attr("d", lineMaker(data));
+
+      console.log(d3.symbols)
+      var scT = d3.scaleOrdinal(d3.symbols).domain(["A", "B", "C"]);
+
+      d3.select("#symbols")
+        .append("g").attr("id", "bbb").attr("transform", `translate(300, 0)`)
+        .selectAll("path").data(data).enter().append("path")
+        .attr("d", d => symMkr.size(10).type(scT(d.val))())
+        .attr("fill", "none")
+        .attr("stroke", "blue")
+        .attr("stroke-width", 2)
+        .attr("transform", d => `translate(${d.x}, ${scY(d.y)})`)
+
+      d3.select("#bbb").append("path")
+        .transition().ease(d3.easeLinear).duration(1000)
+        .attr("fill", "none").attr("stroke", "red").attr("d", lineMaker2(data));
+
+      function arrow() {
+        return "M0 0 L16 0 M8 4 L16 0 L8 -4";
+      }
+    </script>
+  </body>
+</html>

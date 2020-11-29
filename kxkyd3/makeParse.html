@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg></svg>
+    <script>
+      d3.text("csv.csv").then(function(res) {
+        var data = d3.csvParse(res, (d, i, cs) => {
+          return {
+            date: new Date(d.Year, d.Month - 1),
+            name: d.Name,
+            weight: +d["Weight (kg)"]
+          };
+        });
+      });
+
+      d3.csv("csv.csv").then(function(res) {
+        var data = res;
+      });
+
+      d3.text("csv.csv").then(function(res) {
+        var data = d3.csv.Parse(res);
+      });
+
+      d3.text("csv.csv").then(function(res) {
+        var parser = d3.dsvFormat(",");
+        var data = parser.parse(res);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <div>
+      <svg id="brush1" width="300" height="300" style="background:lightgrey">
+      </svg>
+  
+      <svg id="brush2" width="300" height="300" style="background:lightgrey">
+      </svg>
+    </div>
+
+    <script>
+      var svg1 = d3.select("#brush1")
+      var svg2 = d3.select("#brush2")
+
+      var xScale1 = d3.scaleLinear().domain([0, 10, 50]).range(["lime", "yellow", "red"])
+      var xScale2 = d3.scaleLinear().domain([0, 10, 50]).range(["lime", "yellow", "blue"])
+
+      d3.csv("./data/dense.csv").then(function(data) {
+        data.forEach(d => {
+          d["A"] = +(d["A"])
+          d["B"] = +(d["B"])
+          d["C"] = +(d["C"])
+        })
+
+        console.log(data)
+
+        var cs1 = svg1.selectAll("circle")
+          .data(data).enter()
+          .append("circle")
+          .attr("r", 5)
+          .attr("cx", d => d["A"])
+          .attr("cy", d => d["B"])
+          .attr("fill", xScale1(Infinity)).attr( "fill-opacity", 0.4 )
+
+        var cs2 = svg2.selectAll("circle")
+          .data(data).enter()
+          .append("circle")
+          .attr("r", 5)
+          .attr("cx", d => d["A"])
+          .attr("cy", d => d["C"])
+          .attr("fill", xScale2(Infinity)).attr( "fill-opacity", 0.4 )
+
+        svg1.attr("cursor", "crosshair")
+          .on("mousemove", function(event, context) {
+            var pt = d3.pointer(event);
+            cs1.attr("fill", function(d, i) {
+              var dx = pt[0] - d3.select(this).attr("cx");
+              var dy = pt[1] - d3.select(this).attr("cy");
+              var r = Math.hypot(dx, dy);
+              data[i]["r"] = r;
+              return xScale1(r);
+            });
+            cs2.attr("fill", (d, i) => 
+              xScale2(data[i]["r"])
+            );
+          }).on("mouseleave", function(event, context) {
+            cs1.attr("fill", xScale1(Infinity));
+            cs2.attr("fill", xScale2(Infinity));
+          });
+
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+</head>
+<body>
+  <a id="download" href="#">Download SVG</a>
+
+  <svg id="chart"></svg>
+  <script>
+    const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 750 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chart").attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+    var g = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`)
+      .attr("id", "maingroup");
+
+    // x轴
+    var xScale = d3.scaleLinear();
+
+    var yScale = d3.scaleLinear();
+    
+    d3.csv("./data/cost.csv").then(function(data) {
+
+      var years = d3.map(data, d=> +(d.year));
+      var costs = d3.map(data, d => +(d.cost));
+
+      var sd = d3.map(data, d => [+(d.year), +(d.cost)]);
+      console.log(sd);
+
+      svg
+      .append("g")
+      .attr("transform", `translate(${margin.left}, ${margin.top})`)
+      .attr("id", "maingroup").call(draw, d3.scaleLinear(), d3.scaleLinear(), width, height, sd);
+      
+      svg
+      .append("g")
+      .attr("transform", `translate(${400}, ${margin.top + 50})`)
+      .attr("id", "maingroup2").call(draw, d3.scaleLinear(), d3.scaleLog(), 300, 200, sd);
+     
+    });
+
+    function draw(g, xScale, yScale, width, height, data) {
+      xScale.domain(d3.extent(data, d => d[0])).range([0, width]).nice();
+      yScale.domain(d3.extent(data, d => d[1])).range([height, 0]).nice();
+
+      var xAxis = d3.axisBottom(xScale).tickSize(3);
+      g.append('g').attr('transform', `translate(${0}, ${height})`).attr('class', 'axis').call(xAxis);
+
+      var yAxis = d3.axisLeft(yScale);
+      g.append("g").call(yAxis);
+      var line =  d3.line()
+          .x(d => xScale(d[0])).y(d => yScale(d[1]))
+          //.curve(d3.curveNatural);
+
+      g.append("path").attr("fill", "none").attr("stroke", "black").attr("d", line(data));
+    }
+
+    d3.select("#download").on("click", function() {
+      d3.select(this)
+        .attr("href", 'data:application/octet-stream;base64,' + btoa(d3.select("#line").html()))
+        .attr("download", "viz.svg") 
+    })
+  </script>
+</body>
+</html>

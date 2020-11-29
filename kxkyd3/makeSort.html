@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <ul id="chart-circle"></ul>
+
+    <table></table>
+    <svg id="aaa"></svg>
+
+    <script>
+      var data = ["Jane", "Anne", "Mary"]
+      var svg = d3.select("#chart-circle")
+      
+      svg.selectAll("li").data(data).enter().append("li").text(d => d);
+      var once;
+      svg.on("mouseenter", function() {
+        if(once) {return;}
+        once = 1;
+        // :nth-child()从1开始计数
+        // :first-child等同于:nth-child(1)
+        svg.insert("li", ":nth-child(2)").datum("Lucy").text(d =>d);
+        svg.insert("li", ":first-child").datum("Lisa").text(d => d);
+      })
+
+      svg.on("click", function() {
+        svg.selectAll("li").sort((a, b) => a<b?-1:1)
+      })
+
+      var table = d3.select("table")
+      table.selectAll("tr").data([1,2,3]).enter().append("tr")
+      table.selectAll("tr:nth-child(even)").selectAll("td").data([1,2,3]).enter().append("td").text(d => d)
+      table.selectAll("tr:nth-child(odd)").selectAll("td").data(["A", "B"]).enter().append("td").text(d => d)
+
+      var txt = d3.select("#aaa").append("text")
+      var s2 = d3.select("#aaa").attr("cursor", "crosshair")
+        .on("mousemove", function(){
+          console.log(s2.node())
+          var pt = d3.mouse( s2.node() );
+          
+          txt.attr("x", 18 + pt[0]).attr("y", 6 + pt[1])
+            .text("" + p[0] + "," + pt[1]);
+        })
+    </script>
+  </body>
+</html>

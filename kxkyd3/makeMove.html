@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="aaa" width="300" height="300" style="background:lightgrey"></svg>
+
+    <script>
+      var txt = d3.select("#aaa").append("text")
+      var svg = d3.select("#aaa").attr("cursor", "crosshair")
+        .on("mousemove", function(event, context){
+          var pt = d3.pointer( event );
+          
+          txt.attr("x", pt[0]).attr("y", pt[1])
+            .text("" + pt[0] + "," + pt[1]).attr("fill", "blue");
+        })
+
+      //   coordsPixels( "#coords" );
+
+      // function coordsPixels( selector ) {
+      //   var txt = d3.select( selector ).append( "text" );             //<1>
+      //   var svg = d3.select( selector ).attr( "cursor", "crosshair" ) //<2>
+      //   .on( "mousemove", function(event, context) {
+      //       var pt = d3.pointer(event );                      //<3>
+      //       txt.attr( "x", 18+pt[0] ).attr( "y", 6+pt[1] )        //<4>
+      //           .text( "" + pt[0] + "," + pt[1] );
+      //   } );
+      // }
+    </script>
+  </body>
+</html>

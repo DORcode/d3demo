@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="sticker" width="700" height="700" style="background-color: lightgray;"></svg>
+  </body>
+
+  <script>
+    function sticker(sel, label) {
+      sel.append("rect").attr("rx", 5).attr("ry", 5)
+        .attr("width", 70).attr("height", 30)
+        .attr("x", -35)
+        .attr("y", -15)
+        .attr("fill", "none")
+        .attr("stroke", "blue")
+        .classed("frame", true);
+
+      sel.append("text").attr("x", 0).attr("y", 5)
+        .attr("text-anchor", "middle")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 14)
+        .classed("label", true)
+        .text(label ? label : d=>d);
+
+    }
+
+    var labels = ["Hello", "World", "How", "Are", "You?"];
+
+    var scaleX = d3.scaleLinear().domain([0, labels.length - 1]).range([100, 500]);
+    var scaleY = d3.scaleLinear().domain([0, labels.length - 1]).range([50, 150]);
+
+    d3.select("#sticker")
+      .selectAll("g").data(labels).enter().append("g")
+      .attr("transform", (d, i) => `translate(${scaleX(i)}, ${scaleY(i)})`).call(sticker);
+
+    d3.select("#sticker").append("g").attr("transform", `translate(75,150)`)// call(trsf, (d, i) => 300 + scaleX(i), (d, i) => scaleY(i));
+      .call(sticker, "I'm fine!")
+      .selectAll(".label").attr("fill", "red");
+
+    function trsf(sel, dx, dy) {
+      var dxs = d3.local(), dys = d3.local();
+      sel.each(function(d, i) {
+        dxs.set(this, typeof dx === "function" ? dx(d, i) : dx||0)
+      });
+      sel.each(function(d, i) {
+        dys.set(this, typeof dy === "function" ? dy(d, i) : dy||0)
+      });
+      return sel.attr("transform", function() {
+        return `translate(${dxs.get(this)}, ${dys.get(this)})`
+      });
+    }
+
+  </script>
+</html>

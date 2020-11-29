@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="chart-circle"></svg>
+    <script>
+      const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 950 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+      const svg = d3.select("#chart-circle").attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom);
+
+      var xScale = d3.scaleLinear().domain([1, 9]).range([0, width])
+      var yScale = d3.scaleLinear().domain([0.001, 0.2]).range([height, 0])
+
+      var yScale2 = d3.scaleLinear().domain([0.08, 0.9]).range([height, 0])
+
+      var xAxis = d3.axisBottom(xScale)
+      var yAxis = d3.axisLeft(yScale)
+      var yAxis2 = d3.axisRight(yScale2)
+
+      var xAxisGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`).append("g")
+              .transition().ease(d3.easeLinear).duration(1000)
+              .attr('transform', `translate(${0}, ${height})`)
+              .call(xAxis)
+      var yAxisGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`).append("g").transition().ease(d3.easeLinear).duration(1000).call(yAxis)
+
+      var yAxisGroup2 = svg.append("g").attr("transform", `translate(${margin.left + width}, ${margin.top})`).append("g").transition().ease(d3.easeLinear).duration(1000).call(yAxis2)
+
+
+      var lineMaker = d3.line().x(d => xScale(d["x"])).y(d => yScale(d["y1"]))
+
+      d3.csv("examples-multiple.csv").then(function(data) {
+        data.forEach(d => {
+          d["x"] = +(d["x"])
+          d["y1"] = +(d["y1"])
+          d["y2"] = +(d["y2"])
+
+        })
+        console.log(data)
+        xScale.domain(d3.extent(data, d => d["x"]))
+
+        yScale.domain(d3.extent(data, d => d["y1"]))
+        yScale2.domain(d3.extent(data, d => d["y2"]))
+
+
+        svg.append("g")
+          .attr("id", "ds1")
+          .attr("transform", `translate(${margin.left}, ${margin.top})`)
+          .selectAll("circle")
+          .data(data)
+          .enter()
+          .append("circle")
+          .transition().ease(d3.easeLinear).duration(1000)
+          .attr("fill", "green")
+          .attr("r", 5)
+          .attr("cx", d => xScale(d["x"]))
+          .attr("cy", d => yScale(d["y1"]))
+          .on("click", function(d) {
+            
+          });
+
+        svg.append("g").attr("id", "ds2")
+          .attr("transform", `translate(${margin.left}, ${margin.top})`)
+          .selectAll("circle")
+          .data(data)
+          .enter()
+          .append("circle")
+          .transition().ease(d3.easeLinear).duration(1000)
+          .attr("fill", "blue")
+          .attr("r", 5)
+          .attr("cx", d => xScale(d["x"]))
+          .attr("cy", d => yScale2(d["y2"]));
+
+        d3.select("#ds1").append("path")
+        .transition().ease(d3.easeLinear).duration(1000)
+        .attr("fill", "none").attr("stroke", "red").attr("d", lineMaker(data));
+
+        lineMaker.y(d => yScale2(d["y2"]))
+
+        d3.select("#ds2")
+          .append("path")
+          .transition().ease(d3.easeLinear).duration(1000)
+          .attr("fill", "none").attr("stroke", "cyan").attr("d", lineMaker(data));
+
+        d3.select("#ds2").transition().ease(d3.easeLinear).duration(1000).attr("fill", "red");
+
+      })
+
+            
+    </script>
+  </body>
+</html>

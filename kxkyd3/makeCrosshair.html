@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="usedefs" width="600" style="background-color: lightgray;margin-top:50px">
+      <!-- <defs>
+        <g id="crosshair">
+          <circle cx="0" cy="0" r="2" fill="red"/>
+          <line x1="-3" y1="0" x2="-1" y2="0"/>
+          <line x1="1" y1="0" x2="3" y2="0"/>
+          <line x1="0" y1="-1" x2="0" y2="-3"/>
+          <line x1="0" y1="1" x2="0" y2="3"/>
+        </g>
+      </defs> -->
+    </svg>
+    <script>
+      var data = [[100, 1], [180, 3], [260, 2], [340, 4]];
+      d3.select("#usedefs").append("defs").append("g").attr("id", "crosshair")
+        .append("circle").attr("cx", 0).attr("cy", 0).attr("r", 2).attr("fill", "none")
+        .append("line").attr("x1", -3).attr("y1", 0).attr("x2", -1).attr("y2", 0)
+      d3.select("#usedefs").selectAll("use").data(data).enter().append("use")
+        .attr("href", "#crosshair")
+        .attr("transform", d => `translate(${d[0]}, 50) scale(${2 * d[1]})`)// scale将放大，需要在原点放大后再移动，如果在非原点，坐标点也会和大
+        .attr("stroke", "black")
+        .attr("stroke-width", d => 0.5/Math.sqrt(d[1]));
+    </script>
+  </body>
+  
+</html>

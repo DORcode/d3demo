@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="line" style="background-color: lightgray;margin-top:50px">
+
+    </svg>
+    <script>
+      var ds = [[1, 1], [2, 2], [3, 4], [ 4, 4 ], 
+          [5, 2], [6, 2], [7, 3], [8, 1], [9, 2]];
+
+      
+      var scaleX = d3.scaleLinear().domain([1, 9]).range([20, 200]);
+      var scaleY = d3.scaleLinear().domain([0, 5]).range([100, 20]);
+
+      d3.select("#line").append("g").selectAll("circle")
+      .data(ds).enter().append("circle").attr("cx", d => scaleX(d[0]))
+      .attr("cy", d => scaleY(d[1])).attr("r", 3).attr("fill", "black");
+
+      var line =  d3.line().defined((d, i) => i==3 ? false:true)
+          .x(d => scaleX(d[0])).y(d => scaleY(d[1]))
+          .curve(d3.curveNatural);
+
+      d3.select("#line").append("g").append("path").attr("fill", "none").attr("stroke", "red").attr("d", line(ds));
+    
+      function curveVerticalMedian(context/*d3.path()的实例*/) {
+        return {
+          lineStart: function() {
+            this.data = {};
+          },
+          point: function(x, y) {
+            this.data.push([x, y]);
+          },
+          lineEnd: function() {
+            var xrange = d3.extent(this.data, d => d[0]);
+            var median = d3.median(this.data, d => d[1]);
+            context.moveTo(xrange[0], median);
+            context.lineTo(xrange[1], median)
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

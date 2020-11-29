@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="chart-circle"></svg>
+    <script>
+      const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 950 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+      const svg = d3.select("#chart-circle").attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom);
+            d3.csv("examples-simple.tsv").then(function(data) {
+              console.log(data)
+              svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("r", 10)
+                .attr("fill", "red")
+                .attr("cx", function(d) {
+                  return d["x"];
+                })
+                .attr("cy", function(d) {
+                  return d["y"];
+                })
+            })
+            
+    </script>
+  </body>
+</html>

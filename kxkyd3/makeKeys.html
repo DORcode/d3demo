@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <svg id="chart-circle"></svg>
+    <script>
+      const margin = {'top': 50, 'right': 50, 'bottom': 50, 'left': 50},
+          width = 950 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
+      const svg = d3.select("#chart-circle").attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom);
+
+      var ds1 = [["Mary", 1], ["Jane", 4], ["Anne", 2]];
+      var ds2 = [["Anne", 5], ["Jane", 3]]
+
+      var xScale = d3.scaleLinear().domain([0, 6]).range([0, width])
+      var yScale = d3.scaleLinear().domain([0, 3]).range([0, height])
+      svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .selectAll("text").data(ds1).enter().append("text")
+          .attr("x", 60).attr("y", (d, i) => yScale(i + 1)).text(d => d[0])
+
+      svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`)
+        .selectAll("circle").data(ds1).enter().append("circle")
+        .attr("r", 5).attr("cx", d => xScale(d[1])).attr("cy", (d, i) => yScale(i + 1)).attr("fill", "red")
+      
+      svg.on("click", function() {
+        // svg后面不能加.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`)
+        var cs = svg.selectAll("circle").data(ds2, d => d[0]);
+        
+        cs.transition().duration(1000).attr("cx", d => xScale(d[1]));
+
+        cs.exit().attr("fill", "blue");
+        console.log("click")
+
+        var ts = svg.selectAll("text").data(ds2, d => d[0])
+        ts.transition().duration(1000)
+        ts.exit().attr("fill", "blue");
+      })
+    </script>
+  </body>
+</html>
