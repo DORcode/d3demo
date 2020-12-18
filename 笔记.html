@@ -144,21 +144,45 @@
 
     //如果想在回调函数使用this，必须使用function关键字，不能使用箭头函数。
 
-    D3拥有多种预定义比例尺，根据原始值和目标值的不同，其性质分为三大类：
-    连续比例尺
-    将一个连续的数值区域映射到另一个。
-    分位比例尺
-    将一个连续的数值区域映射到一组离散的数值中。
-    离散比例尺
-    将一组离散值映射到另一组离散值。
-    待映射数据被称为源或定义域，映射结果则被称为目标或值域。这是一种命名惯例，请谨记：比例尺对象就是将定义域映射到值域。
+    // D3拥有多种预定义比例尺，根据原始值和目标值的不同，其性质分为三大类：
+    // 连续比例尺
+    // 将一个连续的数值区域映射到另一个。
+    // 分位比例尺
+    // 将一个连续的数值区域映射到一组离散的数值中。
+    // 离散比例尺
+    // 将一组离散值映射到另一组离散值。
+    // 待映射数据被称为源或定义域，映射结果则被称为目标或值域。这是一种命名惯例，请谨记：比例尺对象就是将定义域映射到值域。
 
-    ·d3.scaleQuantize()
-    工厂方法返回一个比例尺对象，它将定义域拆分为大小相同的分位。
-    ·d3.scaleThreshold()
-    工厂方法返回一个比例尺对象，该对象需要用户提供一组阈值来将定义域划分为多个分位。
-    ·d3.scaleQuantile()
-    工厂返回一个scale对象，该对象接收一个数据集，然后基于该数据集的分位数计算容器。
+    // ·d3.scaleQuantize()
+    // 工厂方法返回一个比例尺对象，它将定义域拆分为大小相同的分位。
+    // ·d3.scaleThreshold()
+    // 工厂方法返回一个比例尺对象，该对象需要用户提供一组阈值来将定义域划分为多个分位。
+    // ·d3.scaleQuantile()
+    // 工厂返回一个scale对象，该对象接收一个数据集，然后基于该数据集的分位数计算容器。
+
+    // 离散的颜色来表示连续的数字值域时
+    d3.scaleQuantize()
+    var sc1 = d3.scaleQuantize().domain[0, 1].range(['black', 'yellow', 'red']);
+    d3.scaleThreshold()
+    var sc2 = d3.scaleThreshold().domain([-1, 1]).range(['blue', 'white', 'red']);
+
+    //创建的离散比例尺适用于使用不同的颜色来表示一组离散的输入值
+    d3.scaleOrdinal()
+    
+    d3.scaleOrdinal().domain(['good', 'medium', 'bad']).range(['green', 'yellow', 'red'])
+
+    sc3 = d3.scaleLinear().domain([0, 3, 10]).range(['blue', 'white', 'red']);
+
+    sc4 = d3.scaleLinear().domain([0, 5, 5, 10]).range(['white', 'blue', 'red', 'white']);
+
+    sc5 = d3.scaleSequential(t => '' + d3.hsl(360 * t, 1, 0.5)).domain([0, 10]);
+
+    sc6 = d3.scaleSequential(t => d3.interpolateSinebow(2/3 - 3*t/4)).domain([0, 10]);
+
+    sc7 = d3.scaleDiverging(t => d3.interpolateRdY1Gn(1-t)).domain([0, 10]);
+
+    // 地形图
+    sc8 = d3.scaleSequential(t => d3.interpolateRbgBasis(['#b2b899', '#ffffbf', '#bf9966', '#ffffff'])).domain([0, 10]);
     </script>
 </body>
 </html>

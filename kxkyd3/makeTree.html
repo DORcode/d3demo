@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="//d3js.org/d3.v6.min.js" charset="utf-8"></script>
+</head>
+<body>
+  <svg id="tree"></svg>
+  <script>
+    d3.json("./data/filesys.json").then(function(json) {
+      var nodes = d3.hierarchy(json, d => d.kids);
+      console.log(nodes);
+      d3.tree().size([250, 225])(nodes);
+      var g = d3.select("#tree").append("g").attr("transform", "translate(25, 25)");
+
+      var lnkMrk = d3.linkVertical().x(d => d.x).y(d => d.y);
+      console.log(nodes.links());
+      g.selectAll("path").data(nodes.links()).enter().append("path").attr("d", d=>lnkMrk(d))
+        .attr("stroke", "red").attr("fill", "none");
+      g.selectAll("circle").data(nodes.descendants()).enter().append("circle").attr("r", 5)
+        .attr("cx", d=>d.x).attr("cy", d=>d.y);
+
+      g.selectAll("text").data(nodes.descendants()).enter().append("text").attr("x", d=>d.x).attr("y", d=>d.y).text(d=>d.data.name);
+    })
+  </script>
+  
+</body>
+</html>
